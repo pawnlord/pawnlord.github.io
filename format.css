@@ -1,0 +1,50 @@
+body {
+  background-color: rgba(155,155,155,1);
+}
+
+h1 {
+  color: black;
+  text-align: center;
+  font-family: arial;
+  font-size: 38px;
+}
+h2
+{
+  color: rgba(133, 176, 250, 1);
+  font-family: arial;
+  font-size: 35px;
+  
+      background-color:rgba(250,141,123,1);
+}
+p
+{
+    margin-left: 200px;
+    margin-right: 200px;
+	color: darkblue;
+	font-family: arial;
+	font-size: 23px;
+}
+
+a
+{
+	margin-left: 100;
+	color: darkred;
+  font-family: arial;
+	font-size: 23px;
+}
+#center-container {
+    text-align: center;
+}
+
+#margin {
+    margin-left: 200px;
+    margin-right: 200px;
+}
+#link {
+  color: rgba(255,255,255,1);
+
+}
+.link-hover:hover {
+      background-color:rgba(255,0,0,1);
+
+}

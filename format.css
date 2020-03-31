@@ -1,35 +1,35 @@
 body {
-  background-color: rgba(155,155,155,1);
+  background-color: rgba(0,0,0,1);
 }
 
 h1 {
-  color: black;
+  color: white;
   text-align: center;
-  font-family: arial;
+  font-family: monospace;
   font-size: 38px;
 }
 h2
 {
-  color: rgba(133, 176, 250, 1);
-  font-family: arial;
+  color: rgba(100, 100, 255, 1);
+  font-family: monospace;
   font-size: 35px;
   
-      background-color:rgba(250,141,123,1);
+      background-color:rgba(150,0,0,1);
 }
 p
 {
-    margin-left: 200px;
-    margin-right: 200px;
-	color: darkblue;
-	font-family: arial;
+	margin-left: 200px;
+	margin-right: 200px;
+	color: green;
+	font-family: monospace;
 	font-size: 23px;
 }
 
 a
 {
 	margin-left: 100;
-	color: darkred;
-  font-family: arial;
+	color: red;
+	font-family: monospace;
 	font-size: 23px;
 }
 #center-container {

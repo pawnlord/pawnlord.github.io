@@ -1,23 +1,20 @@
 body {
-  background-color: rgba(0,0,0,1);
+	background-color: rgba(0,0,0,1);
 }
 
 h1 {
-  color: white;
-  text-align: center;
-  font-family: monospace;
-  font-size: 38px;
+	color: white;
+	text-align: center;
+	font-family: monospace;
+	font-size: 38px;
 }
-h2
-{
-  color: rgba(100, 100, 255, 1);
-  font-family: monospace;
-  font-size: 35px;
-  
-      background-color:rgba(150,0,0,1);
+h2 {
+	color: rgba(255, 100, 100, 1);
+	font-family: monospace;
+	font-size: 35px;
+	background-color:rgba(0,0,200,1);
 }
-p
-{
+p {
 	margin-left: 200px;
 	margin-right: 200px;
 	color: green;
@@ -25,26 +22,41 @@ p
 	font-size: 23px;
 }
 
-a
-{
+a {
 	margin-left: 100;
 	color: red;
 	font-family: monospace;
 	font-size: 23px;
 }
 #center-container {
-    text-align: center;
+	text-align: center;
+}
+
+#header-list {
+	text-align: center;
+	background-color:rgba(200,0,0,1);
+	padding: 0px 26px;
 }
 
 #margin {
-    margin-left: 200px;
-    margin-right: 200px;
+	margin-left: 200px;
+	margin-right: 200px;
+}
+#button-link {
+	color: rgba(255,255,255,1);
+	border-radius: 5px;
+	padding: 0px 25px;
 }
 #link {
-  color: rgba(255,255,255,1);
+	color: rgba(255,255,255,1);
+	border-radius: 5px;
 
 }
 .link-hover:hover {
       background-color:rgba(255,0,0,1);
+
+}
+.button-link-hover:hover {
+      background-color:rgba(0,0,200,1);
 
 }

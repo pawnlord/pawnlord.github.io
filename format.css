@@ -60,3 +60,7 @@ a {
       background-color:rgba(255,0,0,1);
 
 }
+.button-link-hover:hover {
+      background-color:rgba(0,0,200,1);
+
+}

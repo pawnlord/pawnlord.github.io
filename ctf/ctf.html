@@ -1,5 +1,14 @@
 <html>
     <script>   
-        fetch('https://webhook.site/4a0ebe01-967b-43a2-b1aa-4e64a4d37ebb'); 
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "https://jsonplaceholder.typicode.com/users");
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    const body = JSON.stringify({
+        title: "Hello World",
+        body: "My POST request",
+        userId: 900,
+        });
+
+    xhr.send(body);
     </script>
 </html>

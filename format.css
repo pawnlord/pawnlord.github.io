@@ -47,6 +47,11 @@ b {
 	font-size: 23px;
 }
 
+c {
+	color: #d05b5b;
+	font-family: monospace;
+	font-size: 23px;
+}
 
 
 #header-list {
@@ -71,6 +76,11 @@ b {
 	border-radius: 5px;
 	margin-left: 20%;
 	margin-right: 20%;
+
+}
+#inline-link {
+	color: #5d57ff;
+	border-radius: 5px;
 
 }
 .link-hover:hover {

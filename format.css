@@ -10,22 +10,22 @@ h1 {
 }
 h2 {
 	text-align: center;
-	color: #b334ff;
+	color: #d05b5b;
 	font-family: monospace;
 	font-size: 30px;
 	
-	margin-left: 200px;
-	margin-right: 200px;
+	margin-left: 20%;
+	margin-right: 20%;
 	
 	text-align: center;
-	background-color:rgb(3 3 107);
+	background-color:rgb(0, 68, 34);
 	padding: 0px 10% 0px 10px;
 	width: fit-content;
 	border-radius: 3px;
 }
 p {
-	margin-left: 200px;
-	margin-right: 200px;
+	margin-left: 20%;
+	margin-right: 20%;
 	color: #afafaf;
 	font-family: monospace;
 	font-size: 23px;
@@ -40,9 +40,9 @@ a {
 
 b {
 
-	margin-left: 200px;
-	margin-right: 200px;
-	color: rgba(200,0,0,1);
+	margin-left: 20%;
+	margin-right: 20%;
+	color: #d05b5b;
 	font-family: monospace;
 	font-size: 23px;
 }
@@ -58,8 +58,8 @@ b {
 	border-radius: 3px;
 }
 #margin {
-	margin-left: 200px;
-	margin-right: 200px;
+	margin-left: 20%;
+	margin-right: 20%;
 }
 #button-link {
 	color: rgba(255,255,255,1);
@@ -67,14 +67,14 @@ b {
 	padding: 0px 25px;
 }
 #link {
-	color: #b92626;
+	color: #5d57ff;
 	border-radius: 5px;
-	margin-left: 200px;
-	margin-right: 200px;
+	margin-left: 20%;
+	margin-right: 20%;
 
 }
 .link-hover:hover {
-      background-color:rgba(255,0,0,1);
+      background-color:#5d57ff;
 
 }
 .button-link-hover:hover {
@@ -82,7 +82,7 @@ b {
 
 }
 #content {
-	margin-left: 200px;
-	margin-right: 200px;
+	margin-left: 20%;
+	margin-right: 20%;
 	text-align: left;
 }

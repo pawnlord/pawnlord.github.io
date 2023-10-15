@@ -40,14 +40,16 @@ a {
 
 b {
 
-	margin-left: 20%;
-	margin-right: 20%;
-	color: #d05b5b;
+	color: #d3d3d3;
 	font-family: monospace;
 	font-size: 23px;
+	font-style: bold;
 }
 
 c {
+
+	margin-left: 20%;
+	margin-right: 20%;
 	color: #d05b5b;
 	font-family: monospace;
 	font-size: 23px;

@@ -1,37 +1,53 @@
 body {
-	background-color: rgba(0,0,0,1);
+	background-color: #2e3235;
 }
 
 h1 {
-	color: white;
+	color: #b92626;
 	text-align: center;
 	font-family: monospace;
 	font-size: 38px;
 }
 h2 {
 	text-align: center;
-	color: rgba(255, 100, 100, 1);
+	color: #b334ff;
 	font-family: monospace;
 	font-size: 30px;
-	background-color:rgba(0,0,200,1);
+	
+	margin-left: 200px;
+	margin-right: 200px;
+	
+	text-align: center;
+	background-color:rgb(3 3 107);
+	padding: 0px 10% 0px 10px;
+	width: fit-content;
+	border-radius: 3px;
 }
 p {
 	margin-left: 200px;
 	margin-right: 200px;
-	color: green;
+	color: #afafaf;
 	font-family: monospace;
 	font-size: 23px;
 }
 
 a {
-	margin-left: 100;
-	color: red;
+
+	color: rgba(200,0,0,1);
 	font-family: monospace;
 	font-size: 23px;
 }
-#center-container {
-	text-align: center;
+
+b {
+
+	margin-left: 200px;
+	margin-right: 200px;
+	color: rgba(200,0,0,1);
+	font-family: monospace;
+	font-size: 23px;
 }
+
+
 
 #header-list {
 	margin: auto auto;
@@ -41,7 +57,6 @@ a {
 	width: fit-content;
 	border-radius: 3px;
 }
-
 #margin {
 	margin-left: 200px;
 	margin-right: 200px;
@@ -52,8 +67,10 @@ a {
 	padding: 0px 25px;
 }
 #link {
-	color: rgba(255,255,255,1);
+	color: #b92626;
 	border-radius: 5px;
+	margin-left: 200px;
+	margin-right: 200px;
 
 }
 .link-hover:hover {
@@ -63,4 +80,9 @@ a {
 .button-link-hover:hover {
       background-color:rgba(0,0,200,1);
 
+}
+#content {
+	margin-left: 200px;
+	margin-right: 200px;
+	text-align: left;
 }

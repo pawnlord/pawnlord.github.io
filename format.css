@@ -137,7 +137,6 @@ li {
 /* For all <code> */
 code {
 	font-family: monospace;
-	font-size: 23px;
 	
 }
   
@@ -151,7 +150,8 @@ td > code {
 	box-decoration-break: clone;
 	padding: .1rem .3rem .2rem;
 	border-radius: .2rem;
-  }
+	font-size: 20px;
+}
 
 pre code {
 	scrollbar-color: #666 #201c29;

@@ -3,6 +3,14 @@ This is a write-up about the flags I found for the TCP1P 2023 CTF
 
 ## debug me
 This was a reverse engineering challenge, but as the title suggests, it is primarily done through debugging instead of running the binary through ghidra (or any other decompiler) as one would usually do for a reverse engineering challenge.
+### fixing the crashes
+There are 2 points where the given binary crashes, the first in a function labelled init0 and the second in a function labelled init1. The first one crashes when RAX is not 0, the second one crashes when a stack variable is not 0. What these functions do is not important, as we can just break before the crash and change the respective variables to the expected values to get around the crashing code. In the final program, this is done in the `.gdbinit` script.
+### finding the flag
+The rest of the program is very long, doing enough random assembly operations that Ghidra crashes when it tries to disassemble it.  
+
+None of this is important, however, as at the end of these random instructions, all it does is check a variable. If this variable is wrong, the code exits, but if it is right, the code goes back to the start and does the same set of instructions on the next character. This means that, if we know how many times we loop through this code, we know how many characters we have guessed correctly.  
+
+We know how long the flag is, so we can just guess each character in order, and when one of them causes the program to loop an extra time, add it to the known flag and then move on to guessing the next character, repeat for the length of the flag (72 characters, minus the `TCP1P{` given to us). 
 ### final code
 The final code that I ran to solve this challenge looked as follows (prettied-up for your viewing pleasure):  
 #### debugme.py

@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="">
 
 <head>
 	<link rel="stylesheet" type="text/css" href="../format.css">
-	<title>About -- Pawnlord's Domain</title>
+	<title>Write-Ups -- Pawnlord's Domain</title>
 
 
 	<link rel="apple-touch-icon" sizes="180x180" href="../resources/apple-touch-icon.png">
@@ -13,9 +12,12 @@
 	<link rel="mask-icon" href="../resources/safari-pinned-tab.svg" color="#5bbad5">
 	<meta name="msapplication-TileColor" content="#da532c">
 	<meta name="theme-color" content="#ffffff">
+	<script type="text/javascript" src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+	<script type="text/javascript" src="genWriteups.js"></script>
+	<link href="/prism.css" rel="stylesheet">
 </head>
 
-<body>
+<body data-new-gr-c-s-check-loaded="14.1131.0" data-gr-ext-installed="">
 	<div id="center-container">
 		<div id="header-list">
 			<a href="../index.html" id="button-link" class="button-link-hover">Home</a>
@@ -25,23 +27,29 @@
 			<a href="https://github.com/pawnlord" id="button-link" class="button-link-hover">Github</a>
 			<a href="index.html" id="button-link" class="button-link-hover"> Recursion</a>
 		</div><br>
-		<h1> About: </h1>
-		<h2> About Myself</h2>
-		<p></p>
-		<h2> About My Skills </h2>
-		<p><b>Programming Languages: </b>C, C++, Python, Rust, Go</p>
-		<p><b>Fields of Interest: </b>Systems Programming, Compilers, Cybersecurity, <br>Performance Optimization </p>
-		<p><b>Most Used Language: </b>C++</p>
-		<p><b>Most Used Editor: </b>VS Code</p>
-		<p><b>Libraries Used: </b></p>
-		<p> &emsp;&emsp;<b>C/C++: </b>SFML, XLib, Raylib, SDL, OpenGL, pybind11, dabbled in CUDA and Vulkan</p>
-		<p> &emsp;&emsp;<b>Python: </b>numpy, matplotlib, pygame, pwntools, PIL and OpenCV</p>
-		<p> &emsp;&emsp;<b>Rust: </b>proc_macro/proc_macro2, some nalgebra </p>
-		<c>see also:</c><br />
-		&emsp;<a href="../Projects/index.html" id="link" class="link-hover">Projects</a><br />
-		&emsp;<a href="https://github.com/pawnlord" id="link" class="link-hover">My Github</a><br />
-
+		<div id="header-replace-me">
+			<div id="header-list">
+				<a href="TCP1P.html" id="button-link" class="button-link-hover">TCP1P</a>
+			</div>
+		</div>
 	</div>
-</body>
+	<div id="content-replace-me">
+		<pre><code class="c language-c">#include &lt;stdio.h&gt;
+int main() {
+    char c[] = "this is c code";
+}
+</code></pre>
+	</div>
+	<div id="auto-generate">
+		<pre><code class="c language-c">             #include &lt;stdio.h&gt;     int main() {         char c[] = "this is c code";     }     </code></pre>
+	</div>
+	<script type="text/javascript">
+		replaceInstances("TCP1P");
+		replaceHeader();
+	</script>
+
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
 
 </html>

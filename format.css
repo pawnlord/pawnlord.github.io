@@ -35,11 +35,26 @@ h3 {
 	padding: 0px 2% 0px 1%;
 	
 	
+	width: fit-content;
+	border-radius: 3px;
+}
+
+h4 {
 	text-align: center;
+	color: #c32828;
+	font-family: monospace;
+	font-size: 23px;
+	padding: 0px 2% 0px 1%;
+	
+	color: #afafaf;
+	font-family: monospace;
+	font-size: 23px;
+	
 	width: fit-content;
 	border-radius: 3px;
 }
 p {
+	padding: 0px 0% 0px 1%;
 	color: #afafaf;
 	font-family: monospace;
 	font-size: 23px;
@@ -62,8 +77,6 @@ b {
 
 c {
 
-	margin-left: 20%;
-	margin-right: 20%;
 	color: #d05b5b;
 	font-family: monospace;
 	font-size: 23px;

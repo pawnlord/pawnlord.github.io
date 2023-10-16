@@ -4,8 +4,8 @@ This is a write-up about the flags I found for the TCP1P 2023 CTF
 ## debug me
 This was a reverse engineering challenge, but as the title suggests, it is primarily done through debugging instead of running the binary through ghidra (or any other decompiler) as one would usually do for a reverse engineering challenge.
 ### final code
-The final code that I ran to solve this challenge looked as follows:  
-debugme.py:
+The final code that I ran to solve this challenge looked as follows (prettied-up for your viewing pleasure):  
+#### debugme.py
 ```py
 from pwn import *
 
@@ -57,9 +57,8 @@ while len(known_flag) < 0x48:
 
 print(known_flag)
 ```
-.gdbinit:  
+#### .gdbinit
 ```sh
-
 break *init0+34
 break *init1+206
 break *main+265  
@@ -67,8 +66,7 @@ break *main+265
 run
 
 set $rax=0
-c
+continue
 set *(uint64_t)($rbp-4)=0
-c
-
+continue
 ```

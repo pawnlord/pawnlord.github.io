@@ -15,28 +15,26 @@ h2 {
 	color: #c32828;
 	font-family: monospace;
 	font-size: 30px;
-    border: .2em solid #43408a;
-    border-radius: .5em;
+    /* border: .2em solid #43408a;
+    border-radius: .5em; */
 	
 	
 	text-align: center;
-	background-color:rgb(0, 68, 34);
-	padding: 0px 10% 0px 10px;
+	background-color:rgb(0, 61, 1);
+	padding: 0px 1% 0px 1%;
 	width: fit-content;
-	border-radius: 3px;
 }
 h3 {
 	text-align: center;
 	color: #c32828;
 	font-family: monospace;
 	font-size: 25px;
-    border: .1em solid #43408a;
-    border-radius: .5em;
+    /* border: .1em solid #43408a;
+    border-radius: .5em; */
 	padding: 0px 2% 0px 1%;
 	
 	
 	width: fit-content;
-	border-radius: 3px;
 }
 
 h4 {
@@ -51,10 +49,9 @@ h4 {
 	font-size: 23px;
 	
 	width: fit-content;
-	border-radius: 3px;
 }
 p {
-	padding: 0px 0% 0px 1%;
+	padding: 0px 0% 0px 3%;
 	color: #afafaf;
 	font-family: monospace;
 	font-size: 23px;
@@ -99,6 +96,7 @@ c {
 #link {
 	color: #5d57ff;
 	border-radius: 5px;
+	padding: 0px 2% 0px 1%;
 }
 #inline-link {
 	color: #5d57ff;

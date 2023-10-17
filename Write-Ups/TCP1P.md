@@ -2,7 +2,7 @@
 This is a write-up about the flags I found for the TCP1P 2023 CTF
 
 ## debug me
-This was a reverse engineering challenge, but as the title suggests, it is primarily done through debugging instead of running the binary through ghidra (or any other decompiler) as one would usually do for a reverse engineering challenge.
+This was a reverse engineering challenge, but as the title suggests, it is primarily done through debugging instead of running the binary through Ghidra (or any other decompiler) as one would usually do for a reverse engineering challenge.
 ### fixing the crashes
 There are 2 points where the given binary crashes, the first in a function labelled init0 and the second in a function labelled init1. The first one crashes when RAX is not 0, the second one crashes when a stack variable is not 0. What these functions do is not important, as we can just break before the crash and change the respective variables to the expected values and get around the crashing code. In the final program, this is done in the `.gdbinit` script.
 ### finding the flag

@@ -12,7 +12,7 @@ h1 {
 }
 h2 {
 	text-align: center;
-	color: #c32828;
+	color: #FF1B1B;
 	font-family: monospace;
 	font-size: 30px;
     /* border: .2em solid #43408a;
@@ -20,7 +20,7 @@ h2 {
 	
 	
 	text-align: center;
-	background-color:rgb(0, 61, 1);
+	background-color: #008484;
 	padding: 0px 1% 0px 1%;
 	width: fit-content;
 }

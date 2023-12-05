@@ -1,5 +1,5 @@
 body {
-	background-color: #1d1f21;
+	background-color: #1f1c1c	;
 	margin-left: 20%;
 	margin-right: 20%;
 }
@@ -20,7 +20,7 @@ h2 {
 	
 	
 	text-align: center;
-	background-color: #004040;
+	background-color: #473333;
 	padding: 0px 1% 0px 1%;
 	width: fit-content;
 }
@@ -56,7 +56,7 @@ p {
 
 a {
 
-	color: rgba(200,0,0,1);
+	color: rgb(129, 1, 1);
 	font-family: monospace;
 	font-size: 23px;
 }
@@ -80,7 +80,7 @@ c {
 #header-list {
 	margin: auto auto;
 	text-align: center;
-	background-color:rgb(200, 0, 0);
+	background-color:rgb(133, 0, 0);
 	padding: 0px 26px;
 	width: fit-content;
 	border-radius: 3px;

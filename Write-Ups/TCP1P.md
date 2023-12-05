@@ -6,7 +6,7 @@ This was a reverse engineering challenge, but as the title suggests, it is prima
 ### fixing the crashes
 There are 2 points where the given binary crashes, the first in a function labelled init0 and the second in a function labelled init1. The first one crashes when RAX is not 0, the second one crashes when a stack variable is not 0. What these functions do is not important, as we can just break before the crash and change the respective variables to the expected values and get around the crashing code. In the final program, this is done in the `.gdbinit` script.
 ### finding the flag
-The rest of the program is very long, doing enough random assembly operations that the Ghidra decompiler crashes when it tries to disassemble it.  
+The rest of the program is very long, doing enough random assembly operations that Ghidra  crashes when it tries to disassemble it.  
 
 None of this is important, however, as at the end of these random instructions, all it does is check a variable. If this variable is wrong, the code exits, but if it is right, the code goes back to the start and does the same set of instructions on the next character. If we know how many times we loop through this code, we know how many characters we have guessed correctly.  
 

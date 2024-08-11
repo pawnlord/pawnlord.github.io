@@ -31,7 +31,8 @@ if accum {
     "your answer was wrong smh".to_string()
 }    
 ```
-First, it makes an x64 emulator. It them gives permissions to `0x10000000`, `0x20000000`, and `0x30000000`, up to MAX_SIZE (4096 * 64).  
+First, it makes an x64 emulator. It them gives permissions to `0x10000000`, `0x20000000`, and `0x30000000`, up to MAX_SIZE (4096 \* 64).
+
 it writes the payload (`shellcode`) to `0x1`, the input generated from P (the current challenge, in this case palindrome) to `0x20000000`, and reads the output as a vector of u8s from `0x30000000`. The output_len is determined by the RAX register at the end of the program. The program can run for at most 1000 instructions before being halted, and for no longer than 10 seconds. It then checks the output through P (the current challenge, again).
 ### check_output
 ```rust
@@ -67,7 +68,7 @@ fn generate_input(idx: usize) -> Vec<u8> {
 ...wait, so the only possible inputs are 0, 12, 121, and -121?  
 This will be very useful to know for our later code golf
 ### sending the payload
-There are probably better ways to do this, but i know how to use nasm and objcopy so i just built an object file and then copy the text to a separate file to send. The full script for sending the payload can be see nin build.py.
+There are probably better ways to do this, but i know how to use nasm and objcopy so i just built an object file and then copy the text to a separate file to send. The full script for sending the payload can be seen in build.py.
 ### code golfing
 First, we need to setup the output and input registers. This is the largest place we can save on, because `0x20000000` has a large number of 0's in it, but `0x1FFFFFFF` has very few. So, we can set our register to `0x1FFFFFFF` and then increment it  
 The next is the actual logic. We can move in the number we want to edit into a byte register (as 0, 12, 121, and -121 all fit in a byte). The bit layouts of each number is shown below:  
@@ -85,7 +86,7 @@ The third bit is 0 in the palindromes and 1 in the non-palindromes, se we can ch
 134: 10000110
 ```
 We can then check the zero flag, and this will be our final answer.  
-The final optimization we do is with the registers we use: using the [ModR/M](http://www.c-jump.com/CIS77/CPU/x86/X77_0060_mod_reg_r_m_byte.htm) table for x64, we can see the rbx and rdi will use the least 0 bits per instruction. So we use ebx for the input address, bh for the input number, and edi for the output address.  
+The final optimization we do is with the registers we use: using the [ModR/M](http://www.c-jump.com/CIS77/CPU/x86/X77_0060_mod_reg_r_m_byte.htm) table for x64, we can see the rbx and rdi registers will use the least 0 bits per instruction. So we use ebx for the input address, bh for the input number, and edi for the output address.  
 
 ### final payload
 #### palindrome.s

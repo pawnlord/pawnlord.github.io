@@ -159,3 +159,27 @@ pre code {
 	padding: 15px 20px 12px 22px;
 	line-height: 1.75;
   }
+
+  
+complete {
+	font-family: monospace;
+    /* border: .2em solid #43408a; */
+    border-radius: .5em;
+	
+	
+	color: #473333;
+	background-color: rgb(138, 185, 138);
+	padding: 0px 1% 0px 1%;
+	width: fit-content;
+}
+ongoing {
+	font-family: monospace;
+    /* border: .2em solid #43408a; */
+    border-radius: .5em;
+	
+	
+	color: #c98181;
+	background-color: rgb(85, 19, 2);
+	padding: 0px 1% 0px 1%;
+	width: fit-content;
+}

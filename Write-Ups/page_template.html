@@ -14,7 +14,6 @@
 	<meta name="msapplication-TileColor" content="#da532c">
 	<meta name="theme-color" content="#ffffff">
     <script type="text/javascript" src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
-    <script type="text/javascript" src="genWriteups.js"></script>
 	<link href="/prism.css" rel="stylesheet" />
 </head>
 
@@ -40,9 +39,11 @@
 	</div>
     
     <script type="text/javascript">
-        replaceInstances("{name}");
-        replaceHeader();
-        import('/prism.js')
+        (async () => {
+			let gw = await import("./genWriteups.js");
+			gw.replaceInstances("{name}");
+			gw.replaceHeader();
+		})();
     </script>
 
  

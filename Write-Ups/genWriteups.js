@@ -1,5 +1,5 @@
 
-let writeupNames = ["TCP1P", "Buckeye", "CursedCTF", "umdctf"];
+let writeupNames = ["TCP1P", "Buckeye", "CursedCTF", "umdctf", "sekaiCTF"];
 
 
 

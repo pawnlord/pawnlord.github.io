@@ -39,9 +39,9 @@ pre {
     padding: 1em;
     margin: .5em 0;
     overflow: auto;
-    border: .3em solid #040085;
+    border: .1em solid #040085;
     border-radius: .5em;
-    box-shadow: 1px 1px .5em #000 inset
+    /* box-shadow:   1px 1px .5em #000 inset */
 }
 
 :not(pre)>code {

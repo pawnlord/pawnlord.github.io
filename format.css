@@ -183,3 +183,10 @@ ongoing {
 	padding: 0px 1% 0px 1%;
 	width: fit-content;
 }
+
+img {
+	margin-left: 5%;
+	margin-right: 5%;
+	margin-top: 2%;
+	margin-bottom: 2%;
+}

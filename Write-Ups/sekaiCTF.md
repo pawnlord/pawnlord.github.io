@@ -54,13 +54,13 @@ ulong * malloc(int size) {
 ```
 Lets break down the algorithm:
 1. Round the size up to the nearest 0x10
-2. Loop through the blocks past the current malloc_head in the singly linked list of empty blocks
+2. Loop through the blocks past the current malloc\_head in the singly linked list of empty blocks
 3. If the current blocks size is greater than or equal to the rounded size, we will return a block
 4. If the current blocks size is greater than the rounded size + the malloc metadata size, then we need to create a new free block, which we do at the rounded size + 0x10. This block will have a size equal to whatever the current blocks size is, minus the data we allocated and the metadata we need. Set teh size of this block to the rounded size (so we won't do this again if we allocate teh same size and this block is free)
 5. Remove the block from the empty block list
 6. Return the original block whose size was greater or equal to teh size we wanted to allocate
 
-The problem with this algorithm is that it assumes the only time the rounded size will be equal to the current block size but the rounded size plus the metadata size will be greater than it is if the block has already been used, or if there isn't enough space to make another block. However, if malloc_head is at the end of the malloc buffer, then the size of it will be 0x10: the size of the block includes metadata, so we can make an allocation 0x10 bytes long and edit past the buffer when creating a string. We know it is possible to fill the malloc buffer: we can wreite 0x7ff strings, each of length 0x100, which is *much* greater than the maximum of 0x10000 that we are given.  
+The problem with this algorithm is that it assumes the only time the rounded size will be equal to the current block size but the rounded size plus the metadata size will be greater than it is if the block has already been used, or if there isn't enough space to make another block. However, if malloc\_head is at the end of the malloc buffer, then the size of it will be 0x10: the size of the block includes metadata, so we can make an allocation 0x10 bytes long and edit past the buffer when creating a string. We know it is possible to fill the malloc buffer: we can wreite 0x7ff strings, each of length 0x100, which is *much* greater than the maximum of 0x10000 that we are given.  
 
 From the previous section, we know this means that we can override syscalls, and open file specifically, which means its time to start writing an exploit.
 ### the exploit
@@ -89,7 +89,7 @@ This will overwrite the syscalls. So, we make our string `0x00 0x01 0x3b` to ove
 ```
 This seems like it will work, but there's one issue: the read file function needs to allocate 0x7fff to work! Luckily, there's a delete string function. I had issues with this just running through in order, so I opted to do it backwords, which I knew would collect them into a continuous block of memory that read file could use. 
 
-The other thing we need to do is find the size we need to allocate. That can be done through GDB, simply run up to the starting point of the heap filling and print the current heap size. This is harder than it sounds because the binary has no debug symbols and is ASLR, and is where I spent a lot of time, but it can be done by disassembling whatever function you're in and comparing it to Ghidra disassembly until you find malloc, and from there getting malloc_head and it's pointer (or, really, whatever size past malloc_head that's smallest and has a next pointer of 0).
+The other thing we need to do is find the size we need to allocate. That can be done through GDB, simply run up to the starting point of the heap filling and print the current heap size. This is harder than it sounds because the binary has no debug symbols and is ASLR, and is where I spent a lot of time, but it can be done by disassembling whatever function you're in and comparing it to Ghidra disassembly until you find malloc, and from there getting malloc\_head and it's pointer (or, really, whatever size past malloc\_head that's smallest and has a next pointer of 0).
 
 With that, all the issues from running the exploit are done, so here's the final solve script:
 ```py

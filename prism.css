@@ -40,15 +40,14 @@ pre {
     margin: .5em 0;
     overflow: auto;
     border: .1em solid #040085;
-    border-radius: .5em;
+    border-radius: .0em;
     /* box-shadow:   1px 1px .5em #000 inset */
 }
 
 :not(pre)>code {
     padding: .15em .2em .05em;
-    border-radius: .3em;
-    border: .13em solid #7a6651;
-    box-shadow: 1px 1px .3em -.1em #000 inset;
+    border-radius: .1em;
+    border: .01em solid #040085;
     white-space: normal
 }
 

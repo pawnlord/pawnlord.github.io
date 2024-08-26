@@ -143,11 +143,12 @@ td > code {
 	box-decoration-break: clone;
 	padding: .1rem .3rem .2rem;
 	border-radius: .2rem;
-	font-size: 20px;
+	font-size: 18px;
 }
 
 pre code {
 	scrollbar-color: #666 #201c29;
+	font-size: 18px;
 	background: none;
 	white-space: pre;
 	-webkit-overflow-scrolling: touch;

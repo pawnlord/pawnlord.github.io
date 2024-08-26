@@ -13,7 +13,6 @@
 	<link rel="mask-icon" href="../resources/safari-pinned-tab.svg" color="#5bbad5">
 	<meta name="msapplication-TileColor" content="#da532c">
 	<meta name="theme-color" content="#ffffff">
-    <script type="text/javascript" src="genWriteups.js"></script>
 </head>
 
 <body>
@@ -41,8 +40,11 @@
 			&emsp;<a href="../Projects/index.html" id="link" class="link-hover">Projects</a><br />
 			&emsp;<a href="https://github.com/pawnlord" id="link" class="link-hover">My Github</a><br />
 			<script type="text/javascript">
-				replaceHeader();
-				replaceList();
+				(async () => {
+					let gw = await import("./genWriteups.js");
+					gw.replaceHeader();
+					gw.replaceList();
+				})()
 			</script>
 		</div>
     

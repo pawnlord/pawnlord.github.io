@@ -41,8 +41,8 @@ struct list<T, Ts...> {
 };
 ```
 A quick overview:  
-1. cons is a pair of elements, used to store an element in the list concatenated with another list  
-2. car_t gets the first item of cons, cdr_t gets the second item of cons  
+1. `cons` is a pair of elements, used to store an element in the list concatenated with another list  
+2. `car_t` gets the first item of `cons`, `cdr_t` gets the second item of `cons`  
 3. List makes tail lists concatenated with the head at every step down
 A note: the list uses variadic template args, which, like variadic function args, can match any number of arguments. It can also match no arguments, which gives us the base case. 
 
@@ -100,8 +100,8 @@ struct vm<S, cons<V<0>, R>, In>  {
 };
 ```
 The first thing to note is that S, the first value, is the stack. R is the rest of the program, and In is the provided flag.   
-The `vm<5, ...>` code will essentially give A_t the stack to mess around with, and then pass in the stack that A_t returns to the next iteration of the vm.
-A_t is a wrapper around getting the "type" (really, the new stack) of the A struct with parameter S (really, the stack).  
+The `vm<5, ...>` code will essentially give `A_t` the stack to mess around with, and then pass in the stack that `A_t` returns to the next iteration of the vm.
+`A_t` is a wrapper around getting the "type" (really, the new stack) of the A struct with parameter S (really, the stack).  
 Now, the meet of the instruction is in it's own definition, were it pops a value of the stack using cons pattern matching, and then adds the two values together, pushing them back on to the stack.
 #### instruction 1
 ```cpp

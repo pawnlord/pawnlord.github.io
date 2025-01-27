@@ -62,7 +62,15 @@ a {
 
 b {
 
-	color: #d3d3d3;
+	color: #e3e1e1;
+	font-family: monospace;
+	font-size: 18px;
+	font-style: bold;
+}
+
+strong {
+
+	color: #e3e1e1;
 	font-family: monospace;
 	font-size: 18px;
 	font-style: bold;

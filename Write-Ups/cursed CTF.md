@@ -1,4 +1,4 @@
-# CursedCTF
+# cursed CTF
 i exorcized these challenges.
 
 ## palindrome_number

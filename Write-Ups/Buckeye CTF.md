@@ -1,4 +1,4 @@
-# Buckeye
+# Buckeye CTF
 These are write-ups for Buckeye 2023 CTF
 
 ## smederij

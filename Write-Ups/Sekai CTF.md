@@ -1,4 +1,4 @@
-# sekai ctf
+# Sekai CTF 2024
 ## nolibc
 ### hint
 ```

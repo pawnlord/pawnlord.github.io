@@ -1,4 +1,4 @@
-# umdctf
+# UMD CTF
 Challenges I solved during umdctf
 
 # typecheck

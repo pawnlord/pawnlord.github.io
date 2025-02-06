@@ -87,8 +87,8 @@ c {
 #header-list {
 	margin: auto auto;
 	background-color:#3e1212;
-	padding: 0px 26px;
-	width: fit-content;
+	padding: 13px 13px;
+	width: 45%;
 	border-radius: 3px;
 }
 #button-link {

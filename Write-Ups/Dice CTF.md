@@ -80,7 +80,7 @@ print(dmgs)
 ```
 (rand_vals is a python file with `vals = [<insert random values generated above here>]` in it. Note that you could use ctypes here and it would work just as well.)
 
-## exploit
+### exploit
 
 We can now do ROP gadgets, and ROP gadgets are good, but to use them we would need a LibC leak as we don't have a `syscall` gadget. But we can do more with this information: on the stack we find `__libc_start_call_main + 128` is the return address. We don't have an easy way to leak it, but what we do have is a way to subtract from its bytes. After downloading the libc from the Docker image (and grabbing the wrong one, setting me back an hour or two) we find the following one gadget:
 ```c
@@ -104,12 +104,12 @@ Because of the earlier stack write primitive, we know that we control all 3: `rb
 
 So then, we need to be able to subtract two numbers. But we can only subtract bytes! Luckily probability is on our side. This is going to be a little bit of a detour to explain it because its a little confusing.
 
-### subtracting byte-by-byte
+#### subtracting byte-by-byte
 Lets say `libc.symbols["__libc_start_call_main"] + 128` had the offset `0x304050` and we wanted to set it to a one gadget at `0x405060`. Without ASLR, this is simple because we can subtract `0xF0` (as `-0xF0 = 0x10 % 0x100`) from each byte and we have our correct offset. Lets say we have `LIBC_OFFSET = 0x10101010`. Then it is similarly easy, as `0x304050 + LIBC_OFFSET = 0x10405060` and `0x405060 + LIBC_OFFSET = 0x10506070`. As you can see, we still only need to add `0x10` to each byte to get the address to be correct! However, lets say we get unlucky, and `LIBC_OFFSET = 0xA0A0A0`. Then `0x304050 + LIBC_OFFSET = 0xC0D0E0`, but `0x405060 + LIBC_OFFSET = 0xD0E100`! Now we need to add `0xE0` to the first byte and `0x11` to the second byte. This only happens if there is an index in an offset such that `offset[i] + LIBC_OFFSET[i] >= 0x100`, or put another way, we want to avoid carries between bytes. This still gives us good odds enough odds to get the offset that we want if we just blindly subtract as though the ASLR does not cause a carry, as long as each byte in the ASLR is small enough.
 
 So we have our exploit: Replace RBP, R12, and R13 with the desired values, and subtract `(libc.symbols["__libc_start_call_main"] + 128) - 0xebce2` byte-wise from the return address, and then exit the program.
 
-## implementing the exploit
+### implementing the exploit
 The implementation can be broken down into a few functions: `set_byte`, `sub_byte`, and `run`. I also use a method `kill_bunnies` (` :( `) but its not necessary for this exploit (it was used for an earlier version with the wrong libc version, where the one gadget required `rax = 0` to work, so we needed a successful exit). The basic outline of the implementation is as follows:
 - `actions` represents what number the program will send at the ith prompt. So if `actions[10] = 2`, then we will attack the second bunny after being prompted for the 11th time. 
 - `dmgs` is an array representing what damage we deal for a given action, so if `dmgs[10] = 0x30`, we will deal 48 damage to the second bunny after being prompted for the 11th time.

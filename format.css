@@ -47,7 +47,7 @@ h4 {
 	width: fit-content;
 }
 p {
-	padding: 0px 0% 0px 3%;
+	padding: 0px 3% 0px 3%;
 	color: #afafaf;
 	font-family: monospace;
 	font-size: 18px;
@@ -69,7 +69,6 @@ b {
 }
 
 strong {
-
 	color: #e3e1e1;
 	font-family: monospace;
 	font-size: 18px;
@@ -124,7 +123,7 @@ ul {
 
 ul li::before {
 	content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
-	color: #b3b1f1; /* Change the color */
+	color: rgb(154, 76, 92); /* Change the color */
 	font-weight: bold; /* If you want it to be bold */
 	display: inline-block; /* Needed to add space between the bullet and the text */
 	width: 1em; /* Also needed for space (tweak if needed) */
@@ -150,24 +149,20 @@ td > code {
 	word-wrap: break-word;
 	box-decoration-break: clone;
 	padding: .1rem .3rem .2rem;
-	border-radius: .2rem;
-	font-size: 18px;
+	font-size: 15px;
 }
 
 pre code {
 	scrollbar-color: #666 #201c29;
-	font-size: 18px;
 	background: none;
 	white-space: pre;
 	-webkit-overflow-scrolling: touch;
 	overflow-x: scroll;
 	display: block;
-	max-width: 100%;
-	min-width: 100px;
 	font-size: 16px;
-	padding: 15px 20px 12px 22px;
+	padding: 0.5em 1em 0.5em 1em;
 	line-height: 1.75;
-  }
+}
 
   
 complete {

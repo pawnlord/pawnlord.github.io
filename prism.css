@@ -19,7 +19,7 @@ pre {
     -webkit-hyphens: none;
     -moz-hyphens: none;
     -ms-hyphens: none;
-    hyphens: none
+    hyphens: none;
 }
 
 @media print {
@@ -32,22 +32,22 @@ code,
 
 :not(pre)>code,
 pre {
-    background: #1c1a1a;
+    background: #160b0d;
 }
 
 pre {
-    padding: 1em;
-    margin: .5em 0;
+    padding: 0.1em;
+    margin: 0.1em 3em;
     overflow: auto;
-    border: .1em solid #040085;
-    border-radius: .0em;
+    border: .1em solid #160b0d;
+    border-radius: 1em;
     /* box-shadow:   1px 1px .5em #000 inset */
 }
 
 :not(pre)>code {
-    padding: .15em .2em .05em;
-    border-radius: .1em;
-    border: .01em solid #040085;
+    padding: .05em 0.3em .05em 0.3em;
+    border-radius: 0.5em;
+    border: .01em solid #160b0d;
     white-space: normal
 }
 

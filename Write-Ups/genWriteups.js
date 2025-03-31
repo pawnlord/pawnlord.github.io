@@ -1,6 +1,6 @@
 import * as prism from "/prism.js"
 
-let writeupNames = ["TCP1P", "Buckeye CTF", "cursed CTF", "UMD CTF", "Sekai CTF", "x3CTF"];
+let writeupNames = ["TCP1P", "Buckeye CTF", "cursed CTF", "UMD CTF", "Sekai CTF", "x3CTF", "Dice CTF"];
 
 export async function replaceInstances(name){
     var text = await (await fetch(name + ".md")).text();

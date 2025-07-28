@@ -5,7 +5,7 @@ The musl allocator was too slow, so we went to a company known for 🚀 Blazing 
  - Surg
 ```
 
-## setup
+### setup
 This challenge was built using musl and uses a preloaded allocator called [mimalloc](https://github.com/microsoft/mimalloc), which is an allocator maintained by Microsoft that is compatible with libc. From the docker file we can see that it is version 2.2.4. The source code for this version is available on GitHub.
 
 The challenge is a heap-notes style program, which means we can create, delete, look at, and update objects on the heap. All created notes are 128 bytes large. Looking and updating are done through the `read` and `write` functions which aren't vulnerable to buffer overwrites (they take in a size parameter, in this case 127). Looking closer, it becomes obvious there is a use-after-free: the `delete` function does nothing to stop other functions from using the note.
@@ -27,7 +27,7 @@ void update() {
 ```
 Thus, we can write to the internal values of blocks in the freelist if the mimalloc allocator stores information in freed memory (hint: it does). The rest of this writeup will look at how the mimalloc allocator works, how to exploit it to get arbitrary read and write, and then finally how to pop a shell.
 
-### running the chal
+#### running the chal
 How do we set this up locally? After some futzing, what I did was:
 - Create an alpine container (the latest was created 11 days ago, so it should have the same musl version) and download the `libc.musl` stored in the container.
 - Use the `LD_PRELOAD` and `LD_LIBRARY_PATH` environment variables, as well as the musl ld (`ld-musl-x86_64.so.1`), to run the binary locally
@@ -38,8 +38,8 @@ gdb chal --args env LD_PRELOAD=./libmimalloc.so.2.2 LD_LIBRARY_PATH=$PWD ./ld-mu
 ```
 If you install musl and use that instead of the container's library you can get symbols (including some musl and mimalloc symbols). When I moved to using the containers library, I could get symbols by breaking after it starts and then loading the file (`file chal`) and using `vmmap` to get the base offset of said symbols (in pwndbg).
 
-## the mimalloc allocator
-### The idea
+### the mimalloc allocator
+#### The idea
 The mimalloc source code is very messy (due to things like debug statements, `ifdef` sections, and similar), so the first thing we want to do is test it locally to see what it does. Running it in GDB, i did this:
 1. Create blocks in indexes 0 and 1, in that order
 2. Delete blocks 0 and 1, in that order
@@ -69,14 +69,14 @@ beginning of the heap's page
 ```
 Looking at this (installing musl with `apt` because it gave better symbols), we find that the library pointer looking value (`0x00007ffff7f49d40`) is `mi_subproc_default` from libmalloc. This allows us to find the base of libmalloc in memory.
 
-### The problem
+#### The problem
 If you try to exploit this in its current form, it won't work. Lets say you try this exploit:
 1. Create blocks 0 and 1, then delete blocks 0 and 1.
 2. Write `0x4cd9e000000`, create 2 blocks (block 2 and block 3)
 3. Read block 3
 You will notice that our leak is nowhere to be found. What is actually allocated is `0x4cd9e010180`, which is 128 bytes after note 1. Not only this, `0x4cd9e010200` is the value stored in note 3 instead...
 
-### free vs local_free
+#### free vs local_free
 There are 2 structures that go into allocating a block for mimalloc: `mi_heap_t` and `mi_page_t`. Of these, `mi_page_t` is the one with the free list, called `free`. It also has another linked list called `local_free`, which we will talk about later:
 
 ```c
@@ -147,8 +147,8 @@ We run this, and it succeeds!
 libmimalloc base: 0x7f369fbf5000
 ```
 
-## The exploit
-### Getting to musl and finding a target
+### The exploit
+#### Getting to musl and finding a target
 After all this, all we have is leak to mimalloc, which doesn't have any obvious virtual tables or other targets. If we an find musl's offset, then we have a better chance of finding something exploitable. How do we find musl> As with a lot of the rest of this challenge, testing, guessing, and checking will help. First, in pwndbg, we can use `vmmap` to check if `libmimalloc` is at a constant offset to `libc.musl`. You can disable ASLR by using `set disable-randomization off`. You will find that it is a constant offset. In GDB this was `0x33000`. For some reason, running it outside of GDB and using `proc/<pid>/maps` gave a different offset, but if we check it on remote and it gives us the expected value (say, a stack location) then we know which one is correct. Running it with offset `0x33000`:
 
 ```
@@ -192,7 +192,7 @@ void __funcs_on_exit()
 If slot is greater than zero, it wil go through `f` and `a`, paring each function with its arguement. If we can overwrite the first `func` and the first `arg`, and also overwrite `slot` to 1, then we can call `system("/bin/sh")`. The only annoying problem is that `struct fl` is 520 bytes long and bigger than a single chunk, but this can be solved by making multiple chunks in a row (remember, each chunk is `ox80` large and `0x80` apart from each other, so they are contiguous without any meta-data).
 
 
-### Final exploit
+#### Final exploit
 Here is the general outline:
 1. Create 5 fake chunks. The last chunk, chunk 4, will have `/bin/sh` in it and will be put into the `a` array in the `struct fl`. Chunks 1 through 3 will be used as a fake `struct fl` and will be filled with a pointer to `system` and a pointer to chunk 4. Chunk 0 will contain the address for chunk one, and chunk 3 will contain the address for chunk 4.
 2. Write the values above into the chunks. `/bin/sh` is written to chunk 4, `system` is written to chunk 1, and chunk 4's address is written to chunk 3.

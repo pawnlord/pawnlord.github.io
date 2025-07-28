@@ -28,7 +28,7 @@ void update() {
 Thus, we can write to the internal values of blocks in the freelist if the mimalloc allocator stores information in freed memory (hint: it does). The rest of this writeup will look at how the mimalloc allocator works, how to exploit it to get arbitrary read and write, and then finally how to pop a shell.
 
 ### running the chal
-So... how do we set this up locally? After some futzing, what I did was:
+How do we set this up locally? After some futzing, what I did was:
 - Create an alpine container (the latest was created 11 days ago, so it should have the same musl version) and download the `libc.musl` stored in the container.
 - Use the `LD_PRELOAD` and `LD_LIBRARY_PATH` environment variables, as well as the musl ld (`ld-musl-x86_64.so.1`), to run the binary locally
 - Convert this into a format that `gdb` understands using the `--args` option and the env command (which allows setting environment variables per run)

@@ -3,7 +3,7 @@
 
 <head>
 	<link rel="stylesheet" type="text/css" href="../format.css">
-	<title>2025: x3CTF</title>
+	<title>x3CTF</title>
 
 
 	<link rel="apple-touch-icon" sizes="180x180" href="../resources/apple-touch-icon.png">
@@ -14,6 +14,7 @@
 	<meta name="msapplication-TileColor" content="#da532c">
 	<meta name="theme-color" content="#ffffff">
     <script type="text/javascript" src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+    <script type="text/javascript" src="/prism.js"></script>
 	<link href="/prism.css" rel="stylesheet" />
 </head>
 
@@ -29,22 +30,107 @@
 			<a href="/Write-Ups/index.html" id="button-link" class="button-link-hover">Write-Ups</a><br>
 			<a href="https://github.com/pawnlord" id="button-link" class="button-link-hover">Github</a><br>
 			</div><br>
-			<div id="header-replace-me"></div>
+			<div id="header-replace-me">
+				<div id="header-list"> 
+					<a href="Buckeye CTF.html" id="button-link" class="button-link-hover">Buckeye CTF</a></br>
+<a href="cursed CTF.html" id="button-link" class="button-link-hover">cursed CTF</a></br>
+<a href="Dice CTF.html" id="button-link" class="button-link-hover">Dice CTF</a></br>
+<a href="Sekai CTF.html" id="button-link" class="button-link-hover">Sekai CTF</a></br>
+<a href="TCP1P.html" id="button-link" class="button-link-hover">TCP1P</a></br>
+<a href="UIUCTF.html" id="button-link" class="button-link-hover">UIUCTF</a></br>
+<a href="UMD CTF.html" id="button-link" class="button-link-hover">UMD CTF</a></br>
+<a href="x3CTF.html" id="button-link" class="button-link-hover">x3CTF</a></br>
+
+				</div> 
+			</div>
 		</div>
 	
 
-		<div style="margin-left: 30%; width: 80%" id="content-replace-me">
-			
+		<div style="margin-left: 30%; width: 80%">
+			<h1>x3ctf</h1>
+<p>Challenge write ups for x3ctf</p>
+<h2>submission (web)</h2>
+<h3>hint</h3>
+<pre><code>Could you help us out?
+ - by rebane2001
+</code></pre>
+<p>This was an easy web that stumped us for a little bit. It's a PHP file server, where files sent are &quot;chmod&quot;ed to be invisible</p>
+<h3>the layout</h3>
+<p>The important bit of code is here:</p>
+<pre><code class="language-js">if (isset($_FILES['file'])) {
+    $uploadOk = 1;
+    $target_dir = &quot;/var/www/html/uploads/&quot;;
+    $target_file = $target_dir . basename($_FILES[&quot;file&quot;][&quot;name&quot;]);
+    echo $target_file
+
+    if (file_exists($target_file)) {
+        echo &quot;Sorry, file already exists.&quot;;
+        $uploadOk = 0;
+    }
+    if ($_FILES[&quot;file&quot;][&quot;size&quot;] &gt; 50000) {
+        echo &quot;Sorry, your file is too large you need to buy Nitro.&quot;;
+        $uploadOk = 0;
+    }
+    if (!str_ends_with($target_file, '.txt')) {
+        echo &quot;Due to exploit you can only upload files with .txt extensions sorry about this but we got hacked last time so we have to check this from now on.&quot;;
+        $uploadOk = 0;
+    }i
+    // Check if $uploadOk is set to 0 by an error
+    if ($uploadOk == 0) {
+        echo &quot;Sorry, your file was not uploaded.&quot;;
+    // if everything is ok, try to upload file
+    } else {
+        if (move_uploaded_file($_FILES[&quot;file&quot;][&quot;tmp_name&quot;], $target_file)) {
+            echo &quot;The file &quot;. htmlspecialchars( basename( $_FILES[&quot;file&quot;][&quot;name&quot;])). &quot; has been uploaded.&quot;;
+        } else {
+            echo &quot;Sorry, there was an error uploading your file.&quot;;
+        }
+    }
+
+    $old_path = getcwd();
+    chdir($target_dir);
+    // make unreadable
+    shell_exec('chmod 000 *');
+    chdir($old_path);
+}
+</code></pre>
+<p>flag.txt is stored in the <code>uploads/</code> folder and is set to invisible by chmod in the docker init script.<br />
+When a post request is sent with a file, PHP first puts this file into the tmp directory with a random name. It then copies over the file by using the filename set in the POST request and stored in the _FILES list.</p>
+<h3>wrong solutions</h3>
+<p>We went over a lot of the PHP standard library functions to try and find soemthing wrong with them. I'll go over a quick overview now:</p>
+<ul>
+<li><strong>basename:</strong> This takes the 'canonical filename' from the name. Essentially, if you give it <code>path/file.txt</code> as a name, it will return <code>file.txt</code>.</li>
+<li><strong>str_ends_with:</strong> Checks that the second argument is the end of the first argument. This was exploitable due to it handling filenames differently from how file systems handle them, specifically, <code>b&quot;file.php\x00.txt</code> would be unmodified by basename, but the actual file system would see that name as <code>file.php</code> which could lead to an RCE. However, basenbame removes null bytes so this is no longer exploitable.</li>
+<li><strong>file_exists:</strong> We eventually checked this function. Apparently it had RCE at one point due to <a href="https://medium.com/@DGclasher/unveiling-vulnerabilities-achieving-remote-code-execution-through-file-inclusion-and-file-upload-165366ebdd16">PHAR files</a>, but we don't control the protocol and it was already patched in earlier versions of PHP.
+Generally, any exploit we tried involved pushing a malicious PHP file (or file with PHP that could be run, such as .htaccess) and trying to confuse <code>str_ends_with</code> into thinking it was a txt file. We got around the final chmod by making it a dot file (e.g., <code>.attack.php\x00.txt</code> for the null byte attack) as then it would not be listed by the wildcard.</li>
+</ul>
+<p>However, the starting code seems to be perfectly secure. Eventually, I started looking for other attack vectors besides file extension confusion, and found this.</p>
+<h3>the right solution (wildcard injection)</h3>
+<p>The wildcard operator is a dumb operator, it has no information on the command that it is expanding for. If this command has flags that can be put arbitrarily, then it becomes possible to inject these flags by having files with the flags as a name. I decided to test this. If I uploaded a file named <code>test.txt</code> and <code>-v</code> and then ran <code>chmod 000 *</code> in the uploads folder in the docker container, the output would look like this:</p>
+<pre><code>mode of 'test.txt' changed from 0777 (rwxrwxrwx) to 0000 (---------)
+</code></pre>
+<p>This confirmed that the attack could be possible. I just needed to find a suitable flag for an attack vector. Looking at the help for chmod:</p>
+<pre><code>-c, --changes          like verbose but report only when a change is made
+-f, --silent, --quiet  suppress most error messages
+-v, --verbose          output a diagnostic for every file processed
+    --no-preserve-root  do not treat '/' specially (the default)
+    --preserve-root    fail to operate recursively on '/'
+    --reference=RFILE  use RFILE's mode instead of MODE values
+-R, --recursive        change files and directories recursively
+    --help        display this help and exit
+    --version     output version information and exit
+</code></pre>
+<p>If we could use <code>--reference=RFILE</code>, we could change the mode of flag.txt to something readable. Remember earlier how i said dot files don't get changed? well we can still use them as a reference. Testing this locally, it seemed that <code>--reference</code> worked even if it came after the <code>000</code> argument, which means we could use it for our exploit. The final exploit went like this:</p>
+<ul>
+<li>Upload a file <code>.ref.txt</code></li>
+<li>Upload a file <code>--reference=.ref.txt</code></li>
+<li>Navigate to <code>/uploads/flag.txt</code></li>
+</ul>
+<p>With that, we get the flag</p>
+
 		</div>
 	</div>
     
-    <script type="text/javascript">
-		(async () => {
-			let gw = await import("./genWriteups.js");
-			gw.replaceInstances("x3CTF");
-			gw.replaceHeader();
-		})();
-    </script>
 
  
 </body>

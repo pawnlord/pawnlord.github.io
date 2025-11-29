@@ -14,6 +14,7 @@
 	<meta name="msapplication-TileColor" content="#da532c">
 	<meta name="theme-color" content="#ffffff">
     <script type="text/javascript" src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+    <script type="text/javascript" src="/prism.js"></script>
 	<link href="/prism.css" rel="stylesheet" />
 </head>
 
@@ -29,22 +30,246 @@
 			<a href="/Write-Ups/index.html" id="button-link" class="button-link-hover">Write-Ups</a><br>
 			<a href="https://github.com/pawnlord" id="button-link" class="button-link-hover">Github</a><br>
 			</div><br>
-			<div id="header-replace-me"></div>
+			<div id="header-replace-me">
+				<div id="header-list"> 
+					<a href="Buckeye CTF.html" id="button-link" class="button-link-hover">Buckeye CTF</a></br>
+<a href="cursed CTF.html" id="button-link" class="button-link-hover">cursed CTF</a></br>
+<a href="Dice CTF.html" id="button-link" class="button-link-hover">Dice CTF</a></br>
+<a href="Sekai CTF.html" id="button-link" class="button-link-hover">Sekai CTF</a></br>
+<a href="TCP1P.html" id="button-link" class="button-link-hover">TCP1P</a></br>
+<a href="UIUCTF.html" id="button-link" class="button-link-hover">UIUCTF</a></br>
+<a href="UMD CTF.html" id="button-link" class="button-link-hover">UMD CTF</a></br>
+<a href="x3CTF.html" id="button-link" class="button-link-hover">x3CTF</a></br>
+
+				</div> 
+			</div>
 		</div>
 	
 
-		<div style="margin-left: 30%; width: 80%" id="content-replace-me">
-			
+		<div style="margin-left: 30%; width: 80%">
+			<h1>UMD CTF</h1>
+<p>Challenges I solved during umdctf</p>
+<h1>typecheck</h1>
+<p>Hint:</p>
+<pre><code>My C++ code won't type check. Can you fix that for me?
+Note: you will need to set -ftemplate-depth=10000 when compiling.
+</code></pre>
+<h2>overview</h2>
+<p>This was a C++ rev challenge involving the template system. It had an input which was the flag, and an input that was the program. It created lists using some variadic templates, and then could use stack like behavior by popping or pushing by invoking further templates.</p>
+<h3>main types</h3>
+<p>The first type used was a list:</p>
+<pre><code class="language-cpp">struct nil_t {};
+
+template&lt;class T, class U&gt;
+struct cons {
+    using car = T;
+    using cdr = U;
+};
+template &lt;class T&gt;
+using car_t = typename T::car;
+
+template &lt;class T&gt;
+using cdr_t = typename T::cdr;
+
+template &lt;class ... Ts&gt;
+struct list;
+
+template &lt;&gt;
+struct list&lt;&gt; {
+    using type = nil_t;
+};
+
+template &lt;class T, class ... Ts&gt;
+struct list&lt;T, Ts...&gt; {
+    using type = cons&lt;T, list&lt;Ts...&gt;&gt;;
+};
+</code></pre>
+<p>A quick overview:</p>
+<ol>
+<li><code>cons</code> is a pair of elements, used to store an element in the list concatenated with another list</li>
+<li><code>car_t</code> gets the first item of <code>cons</code>, <code>cdr_t</code> gets the second item of <code>cons</code></li>
+<li>List makes tail lists concatenated with the head at every step down
+A note: the list uses variadic template args, which, like variadic function args, can match any number of arguments. It can also match no arguments, which gives us the base case.</li>
+</ol>
+<p>The next type used, which is the main form of item used in the vm, is a value type:</p>
+<pre><code class="language-c++">template &lt;int v&gt; struct V { static const constexpr int value = v ; };
+</code></pre>
+<p>A conventient way of making a list of value types of integers is also provided, which is used by the large prog and flag lists.</p>
+<pre><code class="language-cpp">template &lt;int ... is&gt;
+struct int_list;
+
+template &lt;int i&gt;
+struct int_list&lt;i&gt; {
+    using type = cons&lt;V&lt;i&gt;, nil_t&gt;;
+};
+
+template &lt;int i, int ... is&gt; 
+struct int_list&lt;i, is...&gt; {
+    using type = cons&lt;V&lt;i&gt;, typename int_list&lt;is...&gt;::type&gt;;
+};
+
+template &lt;int ... is&gt;
+using int_list_t = typename int_list&lt;is...&gt;::type;
+</code></pre>
+<p>This is similar to the list above, but it automatically makes everything of type V. Luckily, C++ templates are duck typed so we don't need to worry about int_list not being a list.</p>
+<h2>reversing</h2>
+<h3>instructions</h3>
+<p>The main loop of the VM is near the bottom, so we will start bottom up.<br />
+The entry point is here, and is the first template instantiation called by main.cpp:</p>
+<pre><code class="language-cpp">template &lt;typename S, typename IT, typename In&gt;
+using vm_t = typename vm&lt;S, IT, In&gt;::type;
+</code></pre>
+<p>Now, we specifically match instructions. There are 5 instructions, represented by numbers 0 through 4, and each of them has their own template specialization. We will go through each of them individually, with their respective data structures.</p>
+<h4>instruction 0</h4>
+<pre><code class="language-cpp">template &lt;typename S&gt;
+struct A;
+
+template &lt;int a, int b, typename rest&gt;
+struct A&lt;cons&lt;V&lt;a&gt;, cons&lt;V&lt;b&gt;, rest&gt;&gt;&gt; {
+    using type = cons&lt;V&lt;a + b&gt;, rest&gt;;
+};
+
+template &lt;typename S&gt;
+using A_t = typename A&lt;S&gt;::type;
+
+// ...
+
+template &lt;typename S, typename R, typename In&gt;
+struct vm&lt;S, cons&lt;V&lt;0&gt;, R&gt;, In&gt;  {
+    using type = typename vm&lt;A_t&lt;S&gt;, R, In&gt;::type;
+};
+</code></pre>
+<p>The first thing to note is that S, the first value, is the stack. R is the rest of the program, and In is the provided flag.<br />
+The <code>vm&lt;5, ...&gt;</code> code will essentially give <code>A_t</code> the stack to mess around with, and then pass in the stack that <code>A_t</code> returns to the next iteration of the vm.
+<code>A_t</code> is a wrapper around getting the &quot;type&quot; (really, the new stack) of the A struct with parameter S (really, the stack).<br />
+Now, the meet of the instruction is in it's own definition, were it pops a value of the stack using cons pattern matching, and then adds the two values together, pushing them back on to the stack.</p>
+<h4>instruction 1</h4>
+<pre><code class="language-cpp">template &lt;typename S&gt;
+struct M;
+
+template &lt;int a, int b, typename rest&gt;
+struct M&lt;cons&lt;V&lt;a&gt;, cons&lt;V&lt;b&gt;, rest&gt;&gt;&gt; {
+    using type = cons&lt;V&lt;a * b&gt;, rest&gt;;
+};
+// ...
+template &lt;typename S, typename R, typename In&gt;
+struct vm&lt;S, cons&lt;V&lt;1&gt;, R&gt;, In&gt;  {
+    using type = typename vm&lt;M_t&lt;S&gt;, R, In&gt;::type;
+};
+</code></pre>
+<p>This is similar to the first, except multiplication instead.</p>
+<h4>instruction 2</h4>
+<pre><code class="language-cpp">template &lt;int v, typename S&gt;
+struct P {
+    using type = cons&lt;V&lt;v&gt;, S&gt;;
+};
+// ...
+template &lt;typename S, int PV, typename R, typename In&gt;
+struct vm&lt;S, cons&lt;V&lt;2&gt;, cons&lt;V&lt;PV&gt;, R&gt;&gt;, In&gt;  {
+    using type = typename vm&lt;P_t&lt;PV, S&gt;, R, In&gt;::type;
+};
+</code></pre>
+<p>This Takes the value PV from the program (pattern matched along with it's instruction number) and then pushes it to the stack, keeping the rest of the stack in place</p>
+<h4>instruction 3</h4>
+<pre><code class="language-cpp">template &lt;int i, typename T&gt;
+struct g;
+
+template &lt;int v, typename R&gt;
+struct g&lt;0, cons&lt;V&lt;v&gt;, R&gt;&gt; {
+    static const constexpr int value = v;
+};
+
+template &lt;int N, typename X, typename R&gt;
+struct g&lt;N, cons&lt;X, R&gt;&gt; {
+    static const constexpr int value = g&lt;N-1, R&gt;::value;
+};
+// ...
+template &lt;typename S, int N, typename R, typename In&gt;
+struct vm&lt;S, cons&lt;V&lt;3&gt;, cons&lt;V&lt;N&gt;, R&gt;&gt;, In&gt; {
+    using type = typename vm&lt;cons&lt;V&lt;g&lt;N, In&gt;::value&gt;, S&gt;, R, In&gt;::type;
+};
+</code></pre>
+<p>This is, in my opinion, the weirdest one. It takes a parameter N off the stack and then, recursively, goes from <code>g&lt;N, ...&gt;</code> to <code>g&lt;0, ...&gt;</code>, popping a value off the list passed in to g each time (which, in this case, is the In value, or the flag that we are checkking). So, essentailly, this indexes to In by the next number in the array.</p>
+<h4>instruction 4</h4>
+<pre><code class="language-cpp">template &lt;int v, int v_, typename R&gt;
+struct T&lt;v, cons&lt;V&lt;v_&gt;, R&gt;&gt; {
+    using type = std::enable_if_t&lt;v == v_, R&gt;;
+};
+// ...
+template &lt;typename S, int PV, typename R, typename In&gt;
+struct vm&lt;S, cons&lt;V&lt;4&gt;, cons&lt;V&lt;PV&gt;, R&gt;&gt;, In&gt;  {
+    using type = typename vm&lt;T_t&lt;PV, S&gt;, R, In&gt;::type;
+};
+</code></pre>
+<p>This is an <code>==</code> operator. It pops a value off the stack and then checks it with the next value in the program, and then bushes the value (either true or false) onto the stack.</p>
+<h2>the solution</h2>
+<p>The final solution is simple: at this point we can assume it does a bunch of operations, and then cheks it using instruction 4. So, we &quot;decompile&quot; it to a z3 using a python script. Here's the solve:</p>
+<pre><code class="language-py">from pwn import *
+from z3 import *
+from prog import *
+
+In = []
+for i in range(100):
+    In.append(Int(&quot;In[&quot; + str(i) + &quot;]&quot;))
+
+&quot;&quot;&quot;
+bytecode:
+    0 = add 0, 1
+    1 = mul 0, 1
+    2 = push imm
+    3 = push In[imm]
+    4 = check 0 == imm
+&quot;&quot;&quot;
+
+s = Solver()
+
+stack = []
+
+i = 0
+while i &lt; len(prog):
+    instr = prog[i]
+    if instr == 0:
+        print(hex(i), &quot;--&quot;, &quot;add&quot;)
+        a = stack.pop()
+        b = stack.pop()
+        stack.append(a + b)
+    elif instr == 1:
+        print(hex(i), &quot;--&quot;, &quot;mul&quot;)
+        a = stack.pop()
+        b = stack.pop()
+        stack.append(a * b)
+    elif instr == 2:
+        val = prog[i + 1]
+        i += 1
+        print(hex(i), &quot;--&quot;, &quot;push &quot; + str(val))
+        stack.append(val)
+    elif instr == 3:
+        val = prog[i + 1]
+        i += 1
+        print(hex(i), &quot;--&quot;, &quot;push In[&quot; + str(val) + &quot;]&quot;)
+        stack.append(In[val])
+    elif instr == 4:
+        val = prog[i + 1]
+        i += 1
+        print(hex(i), &quot;--&quot;, &quot;cmp&quot;, val)
+        val_ = stack.pop()
+        stack.append(val_ == val)
+    i += 1
+print(stack)
+
+for cond in stack:
+    s.add(cond)
+
+print(s.check())
+m = s.model()
+
+for val in In:
+    print(chr(m[val].as_long()), end=&quot;&quot;)
+</code></pre>
+
 		</div>
 	</div>
     
-    <script type="text/javascript">
-		(async () => {
-			let gw = await import("./genWriteups.js");
-			gw.replaceInstances("UMD CTF");
-			gw.replaceHeader();
-		})();
-    </script>
 
  
 </body>

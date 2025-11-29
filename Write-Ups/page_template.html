@@ -14,6 +14,7 @@
 	<meta name="msapplication-TileColor" content="#da532c">
 	<meta name="theme-color" content="#ffffff">
     <script type="text/javascript" src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+    <script type="text/javascript" src="/prism.js"></script>
 	<link href="/prism.css" rel="stylesheet" />
 </head>
 
@@ -29,22 +30,19 @@
 			<a href="/Write-Ups/index.html" id="button-link" class="button-link-hover">Write-Ups</a><br>
 			<a href="https://github.com/pawnlord" id="button-link" class="button-link-hover">Github</a><br>
 			</div><br>
-			<div id="header-replace-me"></div>
+			<div id="header-replace-me">
+				<div id="header-list"> 
+					{header}
+				</div> 
+			</div>
 		</div>
 	
 
-		<div style="margin-left: 30%; width: 80%" id="content-replace-me">
-			
+		<div style="margin-left: 30%; width: 80%">
+			{replace_me_body}
 		</div>
 	</div>
     
-    <script type="text/javascript">
-        (async () => {
-			let gw = await import("./genWriteups.js");
-			gw.replaceInstances("{name}");
-			gw.replaceHeader();
-		})();
-    </script>
 
  
 </body>

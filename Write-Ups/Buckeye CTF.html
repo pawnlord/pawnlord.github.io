@@ -14,6 +14,7 @@
 	<meta name="msapplication-TileColor" content="#da532c">
 	<meta name="theme-color" content="#ffffff">
     <script type="text/javascript" src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+    <script type="text/javascript" src="/prism.js"></script>
 	<link href="/prism.css" rel="stylesheet" />
 </head>
 
@@ -29,22 +30,57 @@
 			<a href="/Write-Ups/index.html" id="button-link" class="button-link-hover">Write-Ups</a><br>
 			<a href="https://github.com/pawnlord" id="button-link" class="button-link-hover">Github</a><br>
 			</div><br>
-			<div id="header-replace-me"></div>
+			<div id="header-replace-me">
+				<div id="header-list"> 
+					<a href="Buckeye CTF.html" id="button-link" class="button-link-hover">Buckeye CTF</a></br>
+<a href="cursed CTF.html" id="button-link" class="button-link-hover">cursed CTF</a></br>
+<a href="Dice CTF.html" id="button-link" class="button-link-hover">Dice CTF</a></br>
+<a href="Sekai CTF.html" id="button-link" class="button-link-hover">Sekai CTF</a></br>
+<a href="TCP1P.html" id="button-link" class="button-link-hover">TCP1P</a></br>
+<a href="UIUCTF.html" id="button-link" class="button-link-hover">UIUCTF</a></br>
+<a href="UMD CTF.html" id="button-link" class="button-link-hover">UMD CTF</a></br>
+<a href="x3CTF.html" id="button-link" class="button-link-hover">x3CTF</a></br>
+
+				</div> 
+			</div>
 		</div>
 	
 
-		<div style="margin-left: 30%; width: 80%" id="content-replace-me">
-			
+		<div style="margin-left: 30%; width: 80%">
+			<h1>Buckeye CTF</h1>
+<p>These are write-ups for Buckeye 2023 CTF</p>
+<h2>smederij</h2>
+<p>This CTF primarily works through exploiting shell injection with github actions.</p>
+<h3>goal of the exploit</h3>
+<p>What we want to do is leak the flag from build.yaml, but we do not have access to the repository in order to run actions. The only thing we can do is make pull requests to the repository, which run <code>label.yaml</code>.</p>
+<h3>the exploit</h3>
+<p>In the first pass, github replaces certain locations in <code>label.yaml</code> with the name of the pull request. This is basic text replacement with no sanitization, so we can name our pull request in a way that injects the commands to merge our pull request and run a build action. Because <code>label.yaml</code> runs <code>gh</code> commands directly, we know it has the ability to use the <code>gh</code> command to merge the pull request automatically.
+The next step is to leak the flag during the build process. This is done through the makefile, reversing the $FLAG variable before we print it to get around githubs automatic filter on printing secrets in build scripts.</p>
+<h3>final pull request</h3>
+<p>the title of the pull request was</p>
+<pre><code>update&quot;; gh pr merge &lt;PR number&gt; --merge; gh workflow run build.yaml; &quot;
+</code></pre>
+<p>I also changed the makefile:</p>
+<pre><code class="language-sh">CC=gcc
+CFLAGS=-I.
+
+smith.o: smith.c
+	echo &quot;${FLAG}&quot; | rev
+	$(CC) -c -o $@ $&lt; $(CFLAGS) -DFLAG='&quot;${FLAG}&quot;'
+
+smith: smith.o
+	$(CC) -o $@ smith.o $(CFLAGS)
+
+.PHONY: clean
+
+clean:
+	rm smith *.o
+</code></pre>
+<p>Make the pull request, unreverse the output of the build that happens, and then you have the flag.</p>
+
 		</div>
 	</div>
     
-    <script type="text/javascript">
-		(async () => {
-			let gw = await import("./genWriteups.js");
-			gw.replaceInstances("Buckeye CTF");
-			gw.replaceHeader();
-		})();
-    </script>
 
  
 </body>

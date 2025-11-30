@@ -1,6 +1,7 @@
 from markdown_it import MarkdownIt
 import os
 import subprocess
+import datetime
 
 from feedgen.feed import FeedGenerator
 
@@ -27,12 +28,16 @@ def formatDate(month, day, year):
 def getDatePosted(filename):
     p = subprocess.run(["git", "log", "--reverse", "--pretty=\"format:%cs\"", filename], capture_output=True)
     dates = p.stdout.splitlines()
+    if len(dates) < 1:
+        return "Unpublished"
     (year, month, day) = dates[0].decode().removeprefix('"format:').removesuffix('"').split('-')
     return formatDate(month, day, year) 
 
 def getTimestampPosted(filename):
     p = subprocess.run(["git", "log", "--reverse", "--pretty=\"format:%ci\"", filename], capture_output=True)
     dates = p.stdout.splitlines()
+    if len(dates) < 1:
+        return None
     return dates[0].decode().removeprefix('"format:').removesuffix('"')
 
 
@@ -85,7 +90,11 @@ for name in posts:
     fe.id(link.replace(" ", "%20"))
     fe.title(name + ' write-ups')
     fe.link(href=link.replace(" ", "%20"))
-    fe.pubDate(getTimestampPosted(name + ".md"))
+    date = getTimestampPosted(name + ".md")
+    if date == None:
+        fe.pubDate("1970-01-01T00:00:00.000Z")
+    else:
+        fe.pubDate(date)
 
 fg.atom_file('atom.xml')
 fg.rss_file('rss.xml')

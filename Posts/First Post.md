@@ -1,4 +1,4 @@
 # First Post
-This is the first post to my "blog." It is entirely jury-rigged python and HTML code which produces something like a blog without me needing to learn anything. It is unlikely I will post anything in the near future, but for now here are some cool things I've read
+This is a First Post. The point of a First Post is to brag about how you created your blog and then to let the blog rot away for years until you get motivation to create the Second Post, if ever.  
 
-## Cool things I've read
+I'm leaving this here for if I ever do anything. It's nice to have the ability in the future. Maybe I'll post some article lists soon or similar.

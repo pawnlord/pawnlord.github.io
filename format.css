@@ -49,7 +49,6 @@ h4 {
 p {
 	padding: 0px 3% 0px 3%;
 	max-height: min-content;
-	display: inline-block;
 	color: #afafaf;
 	font-family: monospace;
 	font-size: 18px;

@@ -1,5 +1,6 @@
 from markdown_it import MarkdownIt
 import os
+import subprocess
 
 from feedgen.feed import FeedGenerator
 
@@ -18,6 +19,23 @@ for file in filenames:
 header = ""
 list = ""
 
+def formatDate(month, day, year):
+    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+    return months[int(month) - 1] + ", " + day + ", " + year
+
+def getDatePosted(filename):
+    p = subprocess.run(["git", "log", "--reverse", "--pretty=\"format:%cs\"", filename], capture_output=True)
+    dates = p.stdout.splitlines()
+    (year, month, day) = dates[0].decode().removeprefix('"format:').removesuffix('"').split('-')
+    return formatDate(month, day, year) 
+
+def getTimestampPosted(filename):
+    p = subprocess.run(["git", "log", "--reverse", "--pretty=\"format:%ci\"", filename], capture_output=True)
+    dates = p.stdout.splitlines()
+    return dates[0].decode().removeprefix('"format:').removesuffix('"')
+
+
 for name in posts:
     header += "<a href=\"" + name +".html\" id=\"button-link\" class=\"button-link-hover\">" + name + "</a></br>\n";
 
@@ -25,12 +43,14 @@ for name in posts:
     list += "<li><a href=\"" + name +".html\" id=\"button-link\" class=\"button-link-hover\">" + name + "</a></br>\n";
 
 for name in posts:
+    date = getDatePosted(name + ".md")
+    post_header = f"<p>Posted {date}</p><hr>\n{header}" 
     with open(name + ".md") as f:
         text = f.read()
     md = MarkdownIt()
     body = md.render(text)
     with open(name + ".html", "w") as f:
-        f.write(template.format(name=name, replace_me_body=body, header=header))
+        f.write(template.format(name=name, replace_me_body=body, header=post_header))
 
 
 index = """
@@ -65,6 +85,7 @@ for name in posts:
     fe.id(link.replace(" ", "%20"))
     fe.title(name + ' write-ups')
     fe.link(href=link.replace(" ", "%20"))
+    fe.pubDate(getTimestampPosted(name + ".md"))
 
 fg.atom_file('atom.xml')
 fg.rss_file('rss.xml')

@@ -69,11 +69,14 @@ a {
 	color: rgb(129, 1, 1);
 	font-family: monospace;
 	font-size: 18px;
+}
+
+#header-list a {
 	max-width: 60%;
-	overflow: hidden;
-	display: inline-block;
 	text-overflow: ellipsis;
   	white-space: nowrap;
+	display: inline-block;
+	overflow: hidden;
 }
 
 b {

@@ -26,19 +26,19 @@ def formatDate(month, day, year):
     return months[int(month) - 1] + ", " + day + ", " + year
 
 def getDatePosted(filename):
-    p = subprocess.run(["git", "log", "--reverse", "--pretty=\"format:%cs\"", filename], capture_output=True)
+    p = subprocess.run(["git", "log", "--follow", "--pretty=\"format:%cs\"", filename], capture_output=True)
     dates = p.stdout.splitlines()
     if len(dates) < 1:
         return "Unpublished"
-    (year, month, day) = dates[0].decode().removeprefix('"format:').removesuffix('"').split('-')
+    (year, month, day) = dates[-1].decode().removeprefix('"format:').removesuffix('"').split('-')
     return formatDate(month, day, year) 
 
 def getTimestampPosted(filename):
-    p = subprocess.run(["git", "log", "--reverse", "--pretty=\"format:%ci\"", filename], capture_output=True)
+    p = subprocess.run(["git", "log", "--follow", "--pretty=\"format:%ci\"", filename], capture_output=True)
     dates = p.stdout.splitlines()
     if len(dates) < 1:
         return None
-    return dates[0].decode().removeprefix('"format:').removesuffix('"')
+    return dates[-1].decode().removeprefix('"format:').removesuffix('"')
 
 
 for name in posts:
